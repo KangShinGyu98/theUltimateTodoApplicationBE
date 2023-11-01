@@ -2,6 +2,7 @@ package com.projectss.theUltimateTodo.memo.service;
 
 import com.projectss.theUltimateTodo.memo.domain.Directory;
 import com.projectss.theUltimateTodo.memo.domain.Memo;
+import com.projectss.theUltimateTodo.memo.domain.MemoStore;
 import com.projectss.theUltimateTodo.memo.dto.MemoRequest;
 import com.projectss.theUltimateTodo.memo.repository.DirectoryRepository;
 import com.projectss.theUltimateTodo.memo.repository.MemoRepository;
@@ -19,8 +20,17 @@ public class MemoService {
     private final MemoRepository memoRepository;
     private final DirectoryRepository directoryRepository;
 
-    public void createMemo(String email, String directoryId, MemoRequest dto) {
-        if(memoStoreRepository.existsByEmail(email)) {
+    public void createRootMemo(String email, MemoRequest dto) {
+        MemoStore memoStore = memoStoreRepository.findMemoStoreByEmail(email)
+                .orElseThrow();
+        Memo memo = new Memo(dto);
+        memoRepository.save(memo);
+        memoStore.saveMemo(memo);
+        memoStoreRepository.save(memoStore);
+    }
+
+    public void createMemoInDirectory(String email, String directoryId, MemoRequest dto) {
+        if(!memoStoreRepository.existsByEmail(email)) {
             throw new IllegalStateException("no memo store by user email");
         }
         Memo memo = new Memo(dto);
@@ -34,7 +44,7 @@ public class MemoService {
     }
 
     public void updateMemo(String email, String memoId, MemoRequest dto) {
-        if(memoStoreRepository.existsByEmail(email)) {
+        if(!memoStoreRepository.existsByEmail(email)) {
             throw new IllegalStateException("no memo store by user email");
         }
         Memo memo = memoRepository.findById(memoId)
@@ -44,14 +54,29 @@ public class MemoService {
     }
 
     public void deleteMemo(String email, String memoId) {
-        if(memoStoreRepository.existsByEmail(email)) {
+        if(!memoStoreRepository.existsByEmail(email)) {
             throw new IllegalStateException("no memo store by user email");
         }
         memoRepository.deleteById(memoId);
     }
 
-    public void moveLocation(String email, String memoId, String directoryId, String targetDirectoryId) {
-        if(memoStoreRepository.existsByEmail(email)) {
+    public void moveRootMemoLocation(String email, String memoId, String targetDirectoryId) {
+        MemoStore memoStore = memoStoreRepository.findMemoStoreByEmail(email)
+                .orElseThrow();
+        Memo memo = memoRepository.findById(memoId)
+                .orElseThrow(() -> new IllegalStateException("no memo by memo id"));
+        memoStore.deleteMemo(memo);
+
+        Directory directory = directoryRepository.findById(targetDirectoryId)
+                .orElseThrow(() -> new IllegalStateException("no directory by directory id"));
+        directory.saveMemo(memo);
+
+        directoryRepository.save(directory);
+        memoStoreRepository.save(memoStore);
+    }
+
+    public void moveLocationToDirectory(String email, String memoId, String directoryId, String targetDirectoryId) {
+        if(!memoStoreRepository.existsByEmail(email)) {
             throw new IllegalStateException("no memo store by user email");
         }
         Directory directory = directoryRepository.findById(directoryId)
@@ -65,5 +90,19 @@ public class MemoService {
                 .orElseThrow(() -> new IllegalStateException("no directory by target directory id"));
         targetDirectory.saveMemo(memo);
         directoryRepository.save(targetDirectory);
+    }
+
+    public void moveLocationToRoot(String email, String memoId, String parentDirectoryId) {
+        MemoStore memoStore = memoStoreRepository.findMemoStoreByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("no memo store by user email"));
+        Directory parentDirectory = directoryRepository.findById(parentDirectoryId)
+                .orElseThrow(() -> new IllegalStateException("no directory by directory id"));
+        Memo memo = memoRepository.findById(memoId)
+                .orElseThrow(() -> new IllegalStateException("no memo by memo id"));
+        parentDirectory.deleteMemo(memo);
+        memoStore.saveMemo(memo);
+
+        directoryRepository.save(parentDirectory);
+        memoStoreRepository.save(memoStore);
     }
 }

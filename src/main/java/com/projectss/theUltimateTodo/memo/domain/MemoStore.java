@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "memo_stores")
+@Document(collection = "memo-stores")
 public class MemoStore {
 
     @Id
@@ -26,6 +26,9 @@ public class MemoStore {
     @DBRef
     private List<Directory> directories = new ArrayList<>();
 
+    @DBRef
+    private List<Memo> memos = new ArrayList<>();
+
     public MemoStore(String email) {
         this.email = email;
     }
@@ -36,5 +39,13 @@ public class MemoStore {
 
     public void deleteDirectory(Directory directory) {
         this.directories.remove(directory);
+    }
+
+    public void saveMemo(Memo memo) {
+        this.memos.add(memo);
+    }
+
+    public void deleteMemo(Memo memo) {
+        this.memos.remove(memo);
     }
 }
