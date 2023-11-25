@@ -15,23 +15,37 @@ spec:
     spec:
       containers:
         - name: backend
-          image: krmp-d2hub-idock.9rum.cc/dev-test/repo_9b5b81b53155
+          image: krmp-d2hub-idock.9rum.cc/dev-test/repo_92f8bf1b1d74:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
-            - name: SECRET_LOG_LEVEL
+            - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: loglevel-secret
-                  key: loglevel
-            - name: SECRET_MONGO_DB_NAME
+                  name: application
+                  key: jwtsecret
+            - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: mongo-db
+                  name: application
                   key: database
-            - name: SECRET_MONGO_DB_URI
+            - name: DB_URI
               valueFrom:
                 secretKeyRef:
-                  name: mongo-db
+                  name: application
                   key: uri
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: application
+                  key: kakaoclientid
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: application
+                  key: kakaosecret
+            - name: HTTP_PROXY
+              value: "http://krmp-proxy.9rum.cc:3128"
+            - name: HTTPS_PROXY
+              value: "http://krmp-proxy.9rum.cc:3128"
