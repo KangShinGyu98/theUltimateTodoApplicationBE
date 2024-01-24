@@ -1,4 +1,23 @@
-﻿# 프로젝트 소개
+# English
+- **Project Description**
+1. It utilizes a **Kakao Chatbot** to enable memo creation not only on PCs but also on mobile devices. The system utilizes AI(Chat GPT) to assist in automatic calendar registration for memos.
+2. This project won the first prize for the full-stack developer training program’s final projects.
+3. took the role of back-end leader (total 6 people, 3 of back-end).
+   
+ - Technical Experience
+    - Implemented login using **Kakao Rest API** and integrated **Kakao Chatbot** services.
+    - Considered introducing **MongoDB** to implement a file system with deep hierarchical structure.
+    - Automated API documentation using **Swagger**, enabling smooth collaboration with the frontend through **CI/CD automation** using Github actions and Code Deploy.
+    - Proposed logic for saving data for non-logged-in users and synchronizing existing data upon the initial login.
+      
+- Tech Stack
+    - Back-end: Spring Boot 3.1.5 , JPA, mongoDB, H2, Java 17
+    - Database: H2, MongoDB
+    - Server: AWS EC2
+    - CI: Github Actions, AWS CodeDeploy
+ ---
+ # Korean
+ # 프로젝트 소개
  - 구름 풀스택 개발자 양성과정 1회차 최종 프로젝트입니다.
  - 메모를 '한 곳' 에서 '편리' 하게 작성할 수 있도록 하는 프로젝트입니다.
  - [시연 영상](https://www.youtube.com/watch?si=esyT39wzfpUsmYXV&v=NIDKg0yNWJs&feature=youtu.be)
